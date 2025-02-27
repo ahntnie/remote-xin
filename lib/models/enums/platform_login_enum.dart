@@ -1,0 +1,1 @@
+enum PlatFormLoginEnum { google, apple }

@@ -1,0 +1,11 @@
+export 'app_config_repo.dart';
+export 'auth/auth_repo.dart';
+export 'call/call_repository.dart';
+export 'call_background_repository.dart';
+export 'chat_repo.dart';
+export 'contact/contact_repo.dart';
+export 'newsfeed/newsfeed_repo.dart';
+export 'notification/notification_repo.dart';
+export 'shared_link_repo.dart';
+export 'storage_repo.dart';
+export 'user/user_repo.dart';

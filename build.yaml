@@ -1,0 +1,12 @@
+# This file configures the build system for json_serializable packages.
+# For more information, see: https://pub.dev/packages/json_serializable#build-configuration
+
+targets:
+  $default:
+    sources:
+      exclude:
+    builders:
+      json_serializable:
+        options:
+          explicit_to_json: true
+          field_rename: snake

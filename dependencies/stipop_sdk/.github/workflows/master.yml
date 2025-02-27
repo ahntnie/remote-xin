@@ -1,0 +1,69 @@
+name: Build when merged into Master
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  release:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          ref: master
+
+      - name: Get version
+        id: get_version
+        run: |
+          echo "::set-output name=name::$(grep version pubspec.yaml | awk '{print $2}')"
+
+      - name: Get tag name
+        id: get_tag
+        run: echo "::set-output name=name::${{ steps.get_version.outputs.name }}"
+
+      - name: Get release name
+        id: get_release
+        run: echo "::set-output name=name::${{ steps.get_version.outputs.name }}"
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_tag.outputs.name }}
+          release_name: ${{ steps.get_release.outputs.name }}
+          draft: false
+          prerelease: false
+
+      - name: Merge master into develop
+        uses: devmasx/merge-branch@v1.1.0
+        with:
+          type: now
+          target_branch: 'develop'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+#      - name: Install Flutter
+#        uses: subosito/flutter-action@v1
+#        with:
+#          flutter-version: '2.5.3'
+#      - name: Install dependencies
+#        run: flutter pub get
+#      - name: Analyze
+#        run: flutter analyze
+#      - name: Setup Pub Credentials
+#        shell: bash
+#        env:
+#          PUB_DEV_PUBLISH_ACCESS_TOKEN: ${{ secrets.PUB_DEV_PUBLISH_ACCESS_TOKEN }}
+#          PUB_DEV_PUBLISH_REFRESH_TOKEN: ${{ secrets.PUB_DEV_PUBLISH_REFRESH_TOKEN }}
+#          PUB_DEV_PUBLISH_TOKEN_ENDPOINT: ${{ secrets.PUB_DEV_PUBLISH_TOKEN_ENDPOINT }}
+#          PUB_DEV_PUBLISH_EXPIRATION: ${{ secrets.PUB_DEV_PUBLISH_EXPIRATION }}
+#        run: |
+#          sh ./pub_login.sh
+#      - name: Check Publish Warnings
+#        run: pub publish --dry-run
+#      - name: Publish Package
+#        run: pub publish -f

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788902474373",
+    "project_id": "xintel-f711a",
+    "storage_bucket": "xintel-f711a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788902474373:android:d4679092c64db54df02fec",
+        "android_client_info": {
+          "package_name": "com.pitech.xintel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOkC4qz3mfkWcvGo-1sV-bfRSJdjyVSNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,19 @@
+String videoSchema = '''
+    id
+    user_id
+    sound_id
+    description
+    hash_tag
+    video
+    image
+    video_view_count
+    is_trending
+    can_comment
+    can_duet
+    can_save
+    country_code
+    created_at
+    updated_at
+    deleted_at
+    video_share_count
+''';

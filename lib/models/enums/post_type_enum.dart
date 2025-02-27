@@ -1,0 +1,4 @@
+enum PostType {
+  post,
+  video,
+}

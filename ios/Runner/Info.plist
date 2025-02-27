@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>AppGroupId</key>
+		<string>$(CUSTOM_GROUP_ID)</string>
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		</array>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleDisplayName</key>
+		<string>$(APP_DISPLAY_NAME)</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>XFactor</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(FLUTTER_BUILD_NAME)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<key>NSCameraUsageDescription</key>
+		<string>$(APP_DISPLAY_NAME) needs access to your camera for capturing photos, recording videos, facilitating video calls and scan QR codes.</string>
+		<key>NSContactsUsageDescription</key>
+		<string>$(APP_DISPLAY_NAME) needs access to your contacts to help you connect with friends.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>$(APP_DISPLAY_NAME) needs access to your microphone to record audio during video calls and recordings.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>$(APP_DISPLAY_NAME) needs access to your photo library to select and share photos and videos with friends.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>$(APP_DISPLAY_NAME) needs access to your photo library to save media files.</string>
+		<key>NSCalendarsUsageDescription</key>
+		<string>$(APP_DISPLAY_NAME) needs access to your calendar to help you schedule events and reminders.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>This app needs access to location when open to show your position on map.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>This app needs access to location when in the background.</string>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>audio</string>
+			<string>fetch</string>
+			<string>processing</string>
+			<string>remote-notification</string>
+			<string>voip</string>
+		</array>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UIStatusBarHidden</key>
+		<false/>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		</array>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>xintel</string>
+				</array>
+				<key>CFBundleURLName</key>
+				<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			</dict>
+		</array>
+		<key>branch_universal_link_domains</key>
+		<array>
+			<string>xintravel.app.link</string>
+			<string>xintravel-alternate.app.link</string>
+		</array>
+		<key>branch_key</key>
+		<dict>
+			<key>live</key>
+			<string>key_live_fqj4fhpjGxQYvrp97dTHNfkaxAisLM7R</string>
+		</dict>
+		<key>GIDClientID</key>
+		<string>1079528704568-h1amtao1k16u4dkd8dqtdmeb6jtds9ls.apps.googleusercontent.com</string>
+		<key>GIDServerClientID</key>
+		<string>1079528704568-mhrirpr5h3ddo560nngupu35li65isls.apps.googleusercontent.com</string>
+		<key>AppGroupId</key>
+		<string>$(CUSTOM_GROUP_ID)</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.1079528704568-h1amtao1k16u4dkd8dqtdmeb6jtds9ls</string>
+					<string>ShareMedia-$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+				</array>
+			</dict>
+		</array>
+	</dict>
+</plist>
