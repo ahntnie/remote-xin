@@ -268,10 +268,20 @@ class ChatInputController extends GetxController
   Future getListCommandBot() async {
     print('Bẳt đầu get list command bot');
     isFetchingCommand.value = true;
-    final response = await newFeedRepo.getListCommandBot(
-        botId: chatHubController.conversation.chatPartner()!.id);
-        print('Get list command bot: $response');
-    listCommandBot.value = response;
+    listCommandBot.value = CommandModel(
+        slashCommands: List.filled(
+      5,
+      SlashCommands(
+          botId: 111,
+          createdAt: '27/02/2024',
+          description: 'Bắt đầu',
+          id: 222,
+          name: 'Start'),
+    ));
+    // final response = await newFeedRepo.getListCommandBot(
+    //     botId: chatHubController.conversation.chatPartner()!.id);
+    //     print('Get list command bot: $response');
+    // listCommandBot.value = response;
     isFetchingCommand.value = false;
   }
 }
