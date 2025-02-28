@@ -11,6 +11,7 @@ import '../../../../short_video/utils/colors.dart';
 import '../../controllers/chat_input_controller.dart';
 import '../../controllers/record_controller.dart';
 import 'reply_message_preview_widget.dart';
+import 'slide_up_menu_commandbot.dart';
 
 class ChatInput extends GetView<ChatInputController> {
   const ChatInput({super.key});
@@ -100,7 +101,7 @@ class ChatInput extends GetView<ChatInputController> {
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildToReplyMessagePreview(),
+                      // _buildToReplyMessagePreview(),
                       Row(
                         children: [
                           AppSpacing.gapW8,
@@ -678,15 +679,30 @@ class ChatInput extends GetView<ChatInputController> {
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Center(
+      child: Center(
         child: Row(
           children: [
-            AppIcon(
-              icon: Icons.menu,
-              color: AppColors.white,
-            ),
+            Obx(() {
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return RotationTransition(
+                    turns:
+                        Tween<double>(begin: 0.0, end: 0.5).animate(animation),
+                    child: child,
+                  );
+                },
+                child: AppIcon(
+                  key: ValueKey<bool>(controller.isShowMenuCommandBot.value),
+                  icon: controller.isShowMenuCommandBot.value
+                      ? Icons.close
+                      : Icons.menu,
+                  color: AppColors.white,
+                ),
+              );
+            }),
             AppSpacing.gapW4,
-            Text(
+            const Text(
               'Menu',
               style: TextStyle(
                 color: AppColors.white,
@@ -704,7 +720,7 @@ class ChatInput extends GetView<ChatInputController> {
 
   Widget _buildMenuCommandBot(BuildContext context) {
     return Obx(() {
-      return controller.isFetchingCommand.value
+      return false //controller.isFetchingCommand.value
           ? SizedBox(
               height: 300,
               child: ListView.builder(
@@ -714,43 +730,51 @@ class ChatInput extends GetView<ChatInputController> {
                 },
               ),
             )
-          : ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxHeight: 200,
-                minHeight: 60,
-              ),
-              child: Container(
-                height:
-                    controller.filteredCommands.value.slashCommands!.length *
-                        60.0,
-                margin: EdgeInsets.only(bottom: 0.059.sh),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppColors.greyBorder,
-                  ),
+          : SlideUpMenuCommandBot(
+              isVisible: controller.isShowMenuCommandBot.value,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height / 2,
+                  minHeight: 60,
                 ),
-                child: Obx(() {
-                  final commands = controller.filteredCommands;
-                  return ListView.builder(
-                    itemCount: commands.value.slashCommands!.length,
-                    itemBuilder: (context, index) {
-                      return _buildItemMenuCommandBot(
-                        context,
-                        commands.value.slashCommands![index].name!,
-                        commands.value.slashCommands![index].description!,
-                        () {
-                          controller.textEditingController.text =
-                              '/${commands.value.slashCommands![index].name!}';
-                          controller.sendMessage();
-                          controller.textEditingController.clear();
-                          controller.isShowMenuCommandBot.value = false;
-                        },
-                      );
-                    },
-                  );
-                }),
+                child: Container(
+                  height:
+                      controller.filteredCommands.value.slashCommands!.length *
+                          60.0,
+                  margin: EdgeInsets.only(bottom: 0.059.sh),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.4),
+                        spreadRadius: 2,
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Obx(() {
+                    final commands = controller.filteredCommands;
+                    return ListView.builder(
+                      itemCount: commands.value.slashCommands!.length,
+                      itemBuilder: (context, index) {
+                        return _buildItemMenuCommandBot(
+                          context,
+                          commands.value.slashCommands![index].name!,
+                          commands.value.slashCommands![index].description!,
+                          () {
+                            controller.textEditingController.text =
+                                '/${commands.value.slashCommands![index].name!}';
+                            controller.sendMessage();
+                            controller.textEditingController.clear();
+                            controller.isShowMenuCommandBot.value = false;
+                          },
+                        );
+                      },
+                    );
+                  }),
+                ),
               ),
             );
     });
@@ -759,45 +783,54 @@ class ChatInput extends GetView<ChatInputController> {
   Widget _buildItemMenuCommandBot(BuildContext context, String name,
       String description, VoidCallback onTap) {
     return Wrap(children: [
-      Row(
+      Column(
         children: [
-          Container(
-            width: 32,
-            height: 32,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-                child: Text('XIN', style: AppTextStyles.s14w700.text1Color)),
-          ),
-          AppSpacing.gapW8,
-          Text('/$name', style: AppTextStyles.s14w700.text2Color),
-          AppSpacing.gapW8,
-          Flexible(
-            child: Text(
-              description,
-              style: AppTextStyles.s14Base.text4Color,
-            ),
-          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Container(
+              //   width: 32,
+              //   height: 32,
+              //   decoration: const BoxDecoration(
+              //     color: AppColors.primary,
+              //     shape: BoxShape.circle,
+              //   ),
+              //   child: Center(
+              //       child: Text('XIN', style: AppTextStyles.s14w700.text1Color)),
+              // ),
+
+              Text(
+                description,
+                style: const TextStyle(color: AppColors.text2),
+              ),
+              Text(
+                '/$name',
+                style: const TextStyle(color: AppColors.subText3),
+              ),
+            ],
+          ).paddingOnly(left: 8, right: 12, top: 10, bottom: 8),
+          const Divider(
+            thickness: 0.3,
+            color: Colors.grey,
+          ).paddingOnly(left: 20),
         ],
-      ).paddingOnly(left: 8, right: 12, top: 8, bottom: 8),
+      ),
     ]).clickable(onTap);
   }
 
   Widget _buildItemMenuShimmer(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-              child: Text('XIN', style: AppTextStyles.s14w700.text1Color)),
-        ),
+        // Container(
+        //   width: 32,
+        //   height: 32,
+        //   decoration: const BoxDecoration(
+        //     color: AppColors.primary,
+        //     shape: BoxShape.circle,
+        //   ),
+        //   child: Center(
+        //       child: Text('XIN', style: AppTextStyles.s14w700.text1Color)),
+        // ),
         AppSpacing.gapW8,
         Shimmer.fromColors(
           baseColor: Colors.grey.withOpacity(0.2),
