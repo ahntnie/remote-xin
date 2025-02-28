@@ -27,13 +27,19 @@ class _ConversationItemState extends State<ArchivedItem> {
   @override
   Widget build(BuildContext context) {
     final child = GestureDetector(
-      child: ListTile(
-        contentPadding: widget.contentPadding,
-        splashColor: Colors.transparent,
-        leading: _buildSto(),
-        title: const Text(
-          'Archived chats',
-          style: TextStyle(color: AppColors.text2),
+      child: Container(
+        color: AppColors.subText2.withOpacity(0.3),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 12, bottom: 8, top: 10),
+          child: ListTile(
+            contentPadding: widget.contentPadding,
+            splashColor: Colors.transparent,
+            leading: _buildSto(),
+            title: const Text(
+              'Archived chats',
+              style: TextStyle(color: AppColors.text2),
+            ),
+          ),
         ),
       ),
       onTap: () {

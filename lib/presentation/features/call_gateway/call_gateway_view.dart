@@ -268,7 +268,7 @@ class CallGatewayView extends BaseView<CallGatewayController> {
   }
 
   Widget _buildBody() {
-    return const ChatDashboardView();
+    return  ChatDashboardView();
     // return Expanded(
     //   child: TabBarView(
     //     controller: controller.tabController,

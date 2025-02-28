@@ -23,11 +23,11 @@ import 'widgets/_conversation_item.dart';
 import 'widgets/shimmer_loading_conversation.dart';
 
 class ChatDashboardView extends BaseView<ChatDashboardController> {
-  const ChatDashboardView({super.key});
+  ChatDashboardView({super.key});
 
   @override
   bool get allowLoadingIndicator => true;
-
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   @override
   Widget buildPage(BuildContext context) {
     return RefreshIndicator(
@@ -241,11 +241,8 @@ class ChatDashboardView extends BaseView<ChatDashboardController> {
                     if (hasArchived && index == 1) {
                       return GestureDetector(
                         onTap: () {},
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 12, bottom: 8),
-                          child: ArchivedItem(
-                            controller: controller,
-                          ),
+                        child: ArchivedItem(
+                          controller: controller,
                         ),
                       );
                     }
@@ -263,6 +260,15 @@ class ChatDashboardView extends BaseView<ChatDashboardController> {
                         ),
                       ),
                     );
+                    // return AnimatedList(
+                    //   key: _listKey,
+                    //   initialItemCount: controller.conversations.length,
+                    //   itemBuilder: (context, index, animation) {
+                    //     final conversation = controller.conversations[index];
+                    //     return controller.buildAnimatedConversationItem(
+                    //         conversation, animation);
+                    //   },
+                    // );
                   },
                 );
               });

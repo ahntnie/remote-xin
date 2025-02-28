@@ -125,9 +125,13 @@ class _ConversationItemState extends State<ConversationItem> {
         motion: const StretchMotion(),
         dismissible: DismissiblePane(
           onDismissed: () {
-            widget.isArchived
-                ? widget.controller!.unArchivedConversation(widget.conversation)
-                : widget.controller!.archivedConversation(widget.conversation);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              widget.isArchived
+                  ? widget.controller!
+                      .unArchivedConversation(widget.conversation)
+                  : widget.controller!
+                      .archivedConversation(widget.conversation);
+            });
           },
         ),
         children: [
@@ -514,7 +518,9 @@ class _ConversationItemState extends State<ConversationItem> {
 
   List<MenuItem> _showMessageOptions(BuildContext context) {
     final items = <MenuItem>[];
-
+    final chatDashboardController = Get.find<ChatDashboardController>();
+    final isPinned =
+        chatDashboardController.pins.contains(widget.conversation.id);
     // items.add(
     //   MenuItem(
     //     label: context.l10n.chat_dashboard__mark_seen_message,
@@ -545,10 +551,21 @@ class _ConversationItemState extends State<ConversationItem> {
     items.add(
       MenuItem(
           label: 'Lưu trữ tin nhắn',
-          icon: AppIcons.delete.svg(color: AppColors.subText2),
+          icon: Icons.archive_outlined,
           onPressed: () {
-            // _onDeleteChat(context);
+            _pinConversation();
           }),
+    );
+    items.add(
+      MenuItem(
+        label: isPinned ? 'Bỏ ghim' : 'Ghim tin nhắn',
+        icon: isPinned
+            ? AppIcons.unpin.svg(color: AppColors.subText2)
+            : AppIcons.pin.svg(color: AppColors.subText2),
+        onPressed: () {
+          _pinConversation();
+        },
+      ),
     );
     items.add(
       MenuItem(
@@ -571,5 +588,9 @@ class _ConversationItemState extends State<ConversationItem> {
   void _unBlockUserPressed() {
     Get.find<ChatDashboardController>()
         .unblockConversation(widget.conversation);
+  }
+
+  void _pinConversation() {
+    Get.find<ChatDashboardController>().pinConversation(widget.conversation.id);
   }
 }

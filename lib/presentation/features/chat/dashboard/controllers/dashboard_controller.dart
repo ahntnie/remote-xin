@@ -34,8 +34,7 @@ class ChatDashboardController extends BaseController
   final _storageRepository = Get.find<StorageRepository>();
 
   final RxList<Conversation> _conversations = <Conversation>[].obs;
-
-  //demo UI
+  RxList<String> pins = <String>[].obs;
   final RxList<Conversation> _archivedConversations = <Conversation>[].obs;
   List<Conversation> get conversations =>
       _conversations.where((c) => !_archivedConversations.contains(c)).toList();
@@ -43,7 +42,7 @@ class ChatDashboardController extends BaseController
       _archivedConversations.toList();
 
   List<Conversation> get allConversations => _conversations.toList();
-
+  RxList<Conversation> conversationsDemo = <Conversation>[].obs;
   // final RxList<Conversation> _filteredConversations = <Conversation>[].obs;
 
   // List<Conversation> get conversations => _conversations.toList();
@@ -187,6 +186,54 @@ class ChatDashboardController extends BaseController
       encoder: (value) => value.toString(),
       decoder: (value) => int.tryParse(value ?? '0') ?? 0,
     );
+  }
+
+/////DEMO PINS MESSAGE
+  Map<String, int> originalPositions = {};
+  AnimatedListState? animatedListState;
+
+  void setAnimatedListState(AnimatedListState state) {
+    animatedListState = state;
+  }
+
+  void pinConversation(String conversationId) {
+    print('Pinning/Unpinning conversation with ID: $conversationId');
+    print('Current pins: $pins');
+    print('Current conversations length: ${_conversations.length}');
+    final conversationExists =
+        _conversations.any((conv) => conv.id == conversationId);
+    print('Conversation with ID $conversationId exists: $conversationExists');
+
+    if (!conversationExists) {
+      print(
+          'Warning: Conversation with ID $conversationId not found in conversations!');
+      return;
+    }
+    final conversationIndex =
+        _conversations.indexWhere((conv) => conv.id == conversationId);
+    final conversationToPin = _conversations[conversationIndex];
+
+    if (pins.contains(conversationId)) {
+      print('Unpinning conversation $conversationId');
+      pins.remove(conversationId);
+      final originalIndex =
+          originalPositions[conversationId] ?? _conversations.length;
+      _conversations.removeAt(conversationIndex);
+      _conversations.insert(originalIndex, conversationToPin);
+      originalPositions.remove(conversationId);
+    } else {
+      print('Pinning conversation $conversationId');
+      pins.add(conversationId);
+      originalPositions[conversationId] = conversationIndex;
+      _conversations.removeAt(conversationIndex);
+      _conversations.insert(0, conversationToPin);
+    }
+
+    print('Pins after update: $pins');
+    print('After update - Conversations: $_conversations');
+
+    update();
+    print('UI updated with conversations: $_conversations');
   }
 
   void _listenChatSocket() {
@@ -956,17 +1003,10 @@ class ChatDashboardController extends BaseController
       handleError: true,
       action: () async {
         await _chatRepository.archivedRoom(conversation.id);
-
-        // final index = _conversations.indexOf(conversation);
-        // if (index != -1) {
-        //   _conversations.remove(conversation);
-        //   _archivedConversations.add(conversation);
-        //   _archivedConversations.refresh();
-        //   update();
-
-        // }
       },
     );
+    _getArchived();
+    _getConversations();
   }
 
   //   _archivedConversations.remove(conversation);
@@ -978,16 +1018,10 @@ class ChatDashboardController extends BaseController
       handleError: true,
       action: () async {
         await _chatRepository.archivedRoom(conversation.id);
-        // final index = _conversations.indexOf(conversation);
-        // if (index != -1) {
-        //   _archivedConversations.remove(conversation);
-        //   _conversations.add(conversation);
-        //   _archivedConversations.refresh();
-        //   update();
-        //   _getArchived();
-        // }
       },
     );
+    _getArchived();
+    _getConversations();
   }
 
   void unblockConversation(Conversation conversation) {
