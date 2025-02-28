@@ -380,6 +380,7 @@ class NewsfeedRepository extends BaseRepository {
   }
 
   Future<List<UserStory>> getListUserStory() async {
+    print('Get list user story');
     return executeApiRequest(
       () async {
         return _authenticatedRestApiClient.get(

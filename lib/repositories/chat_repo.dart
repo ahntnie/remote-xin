@@ -291,7 +291,6 @@ class ChatRepository extends BaseRepository {
           '/room',
           // queryParameters: queryParameters,
           decoder: (data) {
-            print('data: $data');
             return Conversation.fromJsonList(
               (data as Map<String, dynamic>)['rooms'] as List<dynamic>,
             );
@@ -318,18 +317,12 @@ class ChatRepository extends BaseRepository {
   Future<List<Conversation>> getConversationByArchived() async {
     return executeApiRequest(
       () async {
-        print('dataaaa');
         return _chatApiClient.get(
           '/room/managed',
           decoder: (data) {
-            print(data);
             return Conversation.fromJsonList(
               (data as Map<String, dynamic>)['archive'] as List<dynamic>,
             );
-          },
-          serverKnownExceptionParser: (statusCode, serverError) {
-            print('Get arichived status code: $statusCode');
-            return null;
           },
         );
       },

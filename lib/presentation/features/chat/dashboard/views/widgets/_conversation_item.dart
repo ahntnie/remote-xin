@@ -41,12 +41,10 @@ class ConversationItem extends StatefulWidget {
 
 class _ConversationItemState extends State<ConversationItem> {
   bool isMute = false;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.conversation.toJson());
     isMute = widget.conversation.isMuted ?? false;
   }
 

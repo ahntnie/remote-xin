@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
@@ -59,7 +60,7 @@ class CreateStoryController extends BaseController {
   RxBool showTextInput = false.obs;
   RxDouble textSize = 22.0.obs;
   RxInt textColor = 0xffffffff.obs;
-  Rx<Offset> textPosition = Offset(Get.width / 2 - 50, Get.height / 2 - 20).obs;
+  Rx<Offset> textPosition = Offset(0.5.sw - 50.w, 0.5.sh - 20.h).obs;
   final _storageRepository = Get.find<StorageRepository>();
   final _newsFeedRepository = Get.find<NewsfeedRepository>();
   RxInt background = 0xff4c5966.obs;
@@ -71,8 +72,14 @@ class CreateStoryController extends BaseController {
   RxString text = ''.obs;
   PickedMedia? pickedMedia;
   FocusNode focusNode = FocusNode();
-
+  final Rx<GlobalKey> backgroundKey = GlobalKey().obs;
   Future postStory() async {
+    final backgroundSize = backgroundKey.value.currentContext?.size;
+    if (backgroundSize == null) return;
+    final leftRatio = textPosition.value.dx / backgroundSize.width;
+    final topRatio = textPosition.value.dy / backgroundSize.height;
+    print('Left Ratio: $leftRatio');
+    print('Top Ratio: $topRatio');
     await runAction(
       action: () async {
         String code = '';
@@ -102,7 +109,27 @@ class CreateStoryController extends BaseController {
       },
     );
   }
+// void postStory() {
+//     final screenWidth = Get.width;
+//     final screenHeight = Get.height;
+//     final leftRatio = textPosition.value.dx / screenWidth;
+//     final topRatio = textPosition.value.dy / screenHeight;
 
+//     final story = Story(
+//       content: text.value,
+//       colorCode: background.value.toRadixString(16).padLeft(8, '0').substring(2),
+//       urlMedia: imagePath.value.isNotEmpty ? imagePath.value : null,
+//       storyType: imagePath.value.isEmpty ? 'text' : 'image',
+//       textPositionX: leftRatio,
+//       textPositionY: topRatio,
+//       timeEnd: DateTime.now().toIso8601String(),
+//       reactions: [],
+//     );
+//     Get.find<NewsfeedRepository>().createStory(story: story).then((_) {
+//       Get.back();
+//       Get.find<PostsController>().getListUserStory();
+//     });
+//   }
   void afterCreateStorySuccess() {
     Get.back();
     ViewUtil.showToast(
@@ -111,6 +138,22 @@ class CreateStoryController extends BaseController {
     );
     // Get.find<PostsController>().getListUserStory();
     Get.find<ChatDashboardController>().getListUserStory();
+  }
+
+  void onPanUpdate(DragUpdateDetails details) {
+    final backgroundSize = backgroundKey.value.currentContext?.size;
+    if (backgroundSize == null) return;
+
+    // Tính vị trí mới
+    final newDx = (textPosition.value.dx + details.delta.dx)
+        .clamp(0.0, backgroundSize.width - textSize.value);
+    final newDy = (textPosition.value.dy + details.delta.dy)
+        .clamp(0.0, (backgroundSize.height * 0.93) - textSize.value);
+
+    textPosition.value = Offset(newDx, newDy);
+    print('Text Position - dx: $newDx, dy: $newDy');
+    print(
+        'Text backgroundSize - dx: ${backgroundSize.height}, dy:  ${backgroundSize.width}');
   }
 
   // Future<void> getImageFromGallery() async {

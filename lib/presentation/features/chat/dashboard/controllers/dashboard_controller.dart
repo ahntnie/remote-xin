@@ -42,7 +42,6 @@ class ChatDashboardController extends BaseController
       _archivedConversations.toList();
 
   List<Conversation> get allConversations => _conversations.toList();
-  RxList<Conversation> conversationsDemo = <Conversation>[].obs;
   // final RxList<Conversation> _filteredConversations = <Conversation>[].obs;
 
   // List<Conversation> get conversations => _conversations.toList();
@@ -77,7 +76,6 @@ class ChatDashboardController extends BaseController
     await ensureInitStorage();
 
     WidgetsBinding.instance.addObserver(this);
-    print('Vào hàm onInit');
     _getArchived();
     _getConversations();
     _getUnreadMessageCount();
@@ -197,16 +195,10 @@ class ChatDashboardController extends BaseController
   }
 
   void pinConversation(String conversationId) {
-    print('Pinning/Unpinning conversation with ID: $conversationId');
-    print('Current pins: $pins');
-    print('Current conversations length: ${_conversations.length}');
     final conversationExists =
         _conversations.any((conv) => conv.id == conversationId);
-    print('Conversation with ID $conversationId exists: $conversationExists');
 
     if (!conversationExists) {
-      print(
-          'Warning: Conversation with ID $conversationId not found in conversations!');
       return;
     }
     final conversationIndex =
@@ -214,7 +206,6 @@ class ChatDashboardController extends BaseController
     final conversationToPin = _conversations[conversationIndex];
 
     if (pins.contains(conversationId)) {
-      print('Unpinning conversation $conversationId');
       pins.remove(conversationId);
       final originalIndex =
           originalPositions[conversationId] ?? _conversations.length;
@@ -222,18 +213,13 @@ class ChatDashboardController extends BaseController
       _conversations.insert(originalIndex, conversationToPin);
       originalPositions.remove(conversationId);
     } else {
-      print('Pinning conversation $conversationId');
       pins.add(conversationId);
       originalPositions[conversationId] = conversationIndex;
       _conversations.removeAt(conversationIndex);
       _conversations.insert(0, conversationToPin);
     }
 
-    print('Pins after update: $pins');
-    print('After update - Conversations: $_conversations');
-
     update();
-    print('UI updated with conversations: $_conversations');
   }
 
   void _listenChatSocket() {
@@ -290,13 +276,10 @@ class ChatDashboardController extends BaseController
   }
 
   void _getArchived() {
-    print('Vào hàm get archived');
     runAction(
       handleLoading: false,
       action: () async {
-        print('Vào hàm get archived1');
         final conversations = await _chatRepository.getConversationByArchived();
-        print('Vào hàm get archived2');
         _archivedConversations.value = conversations;
         isLoadingInit.value = false;
         for (final conversation in _archivedConversations) {
@@ -998,30 +981,26 @@ class ChatDashboardController extends BaseController
   }
 
   void archivedConversation(Conversation conversation) {
-    print('vô hàn');
     runAction(
       handleError: true,
       action: () async {
         await _chatRepository.archivedRoom(conversation.id);
       },
     );
-    _getArchived();
-    _getConversations();
+    update();
   }
 
   //   _archivedConversations.remove(conversation);
   //   _conversations.add(conversation);
   //   _archivedConversations.refresh();
   void unArchivedConversation(Conversation conversation) {
-    print('vô hàn2');
     runAction(
       handleError: true,
       action: () async {
         await _chatRepository.archivedRoom(conversation.id);
       },
     );
-    _getArchived();
-    _getConversations();
+    update();
   }
 
   void unblockConversation(Conversation conversation) {

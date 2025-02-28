@@ -31,10 +31,7 @@ class _ArchivedChatsScreenState extends State<ArchivedChatsScreen> {
           );
         }
         if (archivedConversations.isNotEmpty &&
-            archivedConversations[0].messages.isNotEmpty) {
-          print('Hahahaha');
-          print(archivedConversations[0].messages[0].content);
-        }
+            archivedConversations[0].messages.isNotEmpty) {}
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 8),

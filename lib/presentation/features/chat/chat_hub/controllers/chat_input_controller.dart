@@ -270,13 +270,13 @@ class ChatInputController extends GetxController
     isFetchingCommand.value = true;
     listCommandBot.value = CommandModel(
         slashCommands: List.filled(
-      5,
+      10,
       SlashCommands(
           botId: 111,
           createdAt: '27/02/2024',
-          description: 'Bắt đầu',
+          description: 'Create a new bot',
           id: 222,
-          name: 'Start'),
+          name: 'start'),
     ));
     // final response = await newFeedRepo.getListCommandBot(
     //     botId: chatHubController.conversation.chatPartner()!.id);

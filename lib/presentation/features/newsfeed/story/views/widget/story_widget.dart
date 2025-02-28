@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // Thêm import
 import 'package:get/get.dart';
 import 'package:story_view/story_view.dart';
 
@@ -86,53 +87,20 @@ class _StoryWidgetState extends State<StoryWidget> {
       if (story.storyType == 'text') {
         storyItems.add(
           StoryItem.text(
-            title: story.content ?? '',
+            title: '', // Không hiển thị văn bản mặc định
             backgroundColor: Color(int.parse('0xff${story.colorCode}')),
-            duration: Duration(
-              milliseconds: (5 * 1000).toInt(),
-            ),
+            duration: const Duration(milliseconds: 5000),
           ),
         );
       } else {
-        storyItems.add(StoryItem.pageImage(
-          url: story.urlMedia ?? '',
-          controller: controller,
-          caption: Text(
-            story.content ?? '',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.s16w400,
+        storyItems.add(
+          StoryItem.pageImage(
+            url: story.urlMedia ?? '',
+            controller: controller,
+            duration: const Duration(milliseconds: 5000),
           ),
-          duration: Duration(
-            milliseconds: (5 * 1000).toInt(),
-          ),
-        ));
+        );
       }
-
-      // switch (story.mediaType) {
-      //   case MediaType.image:
-      //     storyItems.add(StoryItem.pageImage(
-      //       url: story.url == null
-      //           ? 'https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif'
-      //           : story.url.toString(),
-      //       controller: controller,
-      //       caption: Text(story.caption),
-      //       duration: Duration(
-      //         milliseconds: (story.duration * 1000).toInt(),
-      //       ),
-      //     ));
-      //     break;
-      //   case MediaType.text:
-      //     storyItems.add(
-      //       StoryItem.text(
-      //         title: story.caption,
-      //         backgroundColor: story.color,
-      //         duration: Duration(
-      //           milliseconds: (story.duration * 1000).toInt(),
-      //         ),
-      //       ),
-      //     );
-      //     break;
-      // }
     }
   }
 
@@ -140,7 +108,6 @@ class _StoryWidgetState extends State<StoryWidget> {
     for (var reactionStory in widget.user.stories[currentIndex].reactions) {
       if (reactionStory.userId == Get.find<AppController>().currentUser.id) {
         currentReaction = allRowEmoji[reaction.indexOf(reactionStory.type)];
-
         return reaction.indexOf(reactionStory.type);
       }
     }
@@ -149,34 +116,31 @@ class _StoryWidgetState extends State<StoryWidget> {
 
   int countReaction(int index) {
     int total = 0;
-    // Lấy danh sách reaction của câu chuyện hiện tại
     final reactions = widget.user.stories[index].reactions;
-
-    // Đếm số lượng reaction cho mỗi loại reaction
     for (var reactionStory in reactions) {
       if (reactionStory.type == reaction[index]) {
         total++;
       }
     }
-
     return total;
   }
 
   Widget reactionTotal(int index) {
     final total = countReaction(index);
-
     return total == 0
         ? AppSpacing.emptyBox
         : Row(
             children: [
               Text(
                 '$total ',
-                style: AppTextStyles.s22Base
-                    .copyWith(fontSize: 18, color: AppColors.text2),
+                style: AppTextStyles.s22Base.copyWith(
+                  fontSize: 18.sp,
+                  color: AppColors.text2,
+                ),
               ),
               Text(
                 '${allRowEmoji[index]} ',
-                style: AppTextStyles.s22Base.copyWith(fontSize: 22),
+                style: AppTextStyles.s22Base.copyWith(fontSize: 22.sp),
               ),
             ],
           );
@@ -185,10 +149,8 @@ class _StoryWidgetState extends State<StoryWidget> {
   @override
   void initState() {
     super.initState();
-
     controller = StoryController();
     addStoryItems();
-
     date = widget.user.stories[0].timeEnd;
     _scrollController.addListener(_scrollListener);
   }
@@ -204,11 +166,9 @@ class _StoryWidgetState extends State<StoryWidget> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeIn,
     );
-
     final currentIndex = widget.storyController.userStorys.indexOf(widget.user);
     final isLastPage =
         widget.storyController.userStorys.length - 1 == currentIndex;
-
     if (isLastPage) {
       Navigator.of(context).pop();
       Get.find<PostsController>().getListUserStory();
@@ -217,7 +177,6 @@ class _StoryWidgetState extends State<StoryWidget> {
 
   Future<void> _showViewersBottomSheet() async {
     controller.pause();
-
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -226,34 +185,33 @@ class _StoryWidgetState extends State<StoryWidget> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             int selectedIndex = -1;
-
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
-                padding: const EdgeInsets.all(16.0),
-                height: MediaQuery.of(context).size.height * 0.9,
-                decoration: const BoxDecoration(
+                padding: EdgeInsets.all(16.w),
+                height: 0.9.sh, // 90% chiều cao màn hình
+                decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16.0),
-                    topRight: Radius.circular(16.0),
+                    topLeft: Radius.circular(16.r),
+                    topRight: Radius.circular(16.r),
                   ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Tiêu đề
                     Text(
                       'Các tin của bạn',
-                      style: AppTextStyles.s20Base
-                          .copyWith(fontWeight: FontWeight.bold),
+                      style: AppTextStyles.s20Base.copyWith(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-
+                    SizedBox(height: 8.h),
                     SizedBox(
-                      height: 110,
+                      height: 110.h,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: widget.user.stories.length + 1,
@@ -263,58 +221,58 @@ class _StoryWidgetState extends State<StoryWidget> {
                             return AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              width: isSelected ? 110 : 90,
-                              height: isSelected ? 110 : 90,
+                              margin: EdgeInsets.symmetric(horizontal: 8.w),
+                              width: isSelected ? 110.w : 90.w,
+                              height: isSelected ? 110.h : 90.h,
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Stack(children: [
-                                  StoryView(
-                                    storyItems: List<StoryItem>.filled(
-                                        1, storyItems[index],
-                                        growable: true),
-                                    controller: bottomSheetController,
-                                    onComplete: () {
-                                      bottomSheetController.play();
-                                    },
-                                    indicatorColor: Colors.transparent,
-                                    indicatorForegroundColor:
-                                        Colors.transparent,
-                                  ),
-                                  Positioned.fill(
-                                    child: GestureDetector(
-                                      behavior: HitTestBehavior.translucent,
-                                      onTap: () {
-                                        setState(() {
-                                          selectedIndex = index;
-                                          print(
-                                              'selectedIndex: $selectedIndex');
-                                        });
-                                        print('Tapped $isSelected');
+                                borderRadius: BorderRadius.circular(12.r),
+                                child: Stack(
+                                  children: [
+                                    StoryView(
+                                      storyItems: List<StoryItem>.filled(
+                                          1, storyItems[index],
+                                          growable: true),
+                                      controller: bottomSheetController,
+                                      onComplete: () {
+                                        bottomSheetController.play();
                                       },
+                                      indicatorColor: Colors.transparent,
+                                      indicatorForegroundColor:
+                                          Colors.transparent,
                                     ),
-                                  )
-                                ]),
+                                    Positioned.fill(
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.translucent,
+                                        onTap: () {
+                                          setModalState(() {
+                                            selectedIndex = index;
+                                            print(
+                                                'selectedIndex: $selectedIndex');
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           } else {
-                            // Slot thêm tin
                             return GestureDetector(
                               onTap: () {
                                 debugPrint(
                                     'Nhấn để thêm tin ${storyItems.length}');
                               },
                               child: Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                width: 70,
+                                margin: EdgeInsets.symmetric(horizontal: 8.w),
+                                width: 70.w,
+                                height: 70.h,
                                 decoration: BoxDecoration(
                                   color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12.r),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.add,
-                                  size: 32,
+                                  size: 32.sp,
                                   color: Colors.black54,
                                 ),
                               ),
@@ -323,29 +281,35 @@ class _StoryWidgetState extends State<StoryWidget> {
                         },
                       ),
                     ),
-
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Text(
                       'Số lượt xem ${widget.user.stories[currentIndex].reactions.length}',
                       style: AppTextStyles.s20Base.copyWith(
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.bold,
                         color: AppColors.text2,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Expanded(
                       child: ListView.builder(
                         itemCount:
                             widget.user.stories[currentIndex].reactions.length,
                         itemBuilder: (context, index) {
                           return ListTile(
-                            leading: const CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage('https://picsum.photos/200/300'),
+                            leading: CircleAvatar(
+                              radius: 20.r,
+                              backgroundImage: const NetworkImage(
+                                  'https://picsum.photos/200/300'),
                             ),
-                            title: Text('Người dùng $index'),
-                            subtitle:
-                                const Text('Phản ứng hoặc mô tả gì đó...'),
+                            title: Text(
+                              'Người dùng $index',
+                              style: TextStyle(fontSize: 16.sp),
+                            ),
+                            subtitle: Text(
+                              'Phản ứng hoặc mô tả gì đó...',
+                              style: TextStyle(fontSize: 14.sp),
+                            ),
                           );
                         },
                       ),
@@ -358,32 +322,39 @@ class _StoryWidgetState extends State<StoryWidget> {
         );
       },
     );
-
-    // Khi bottomSheet *đóng* -> resume story chính
     controller.play();
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isKeyBoardUp = MediaQuery.of(context).viewInsets.bottom > 0;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Stack(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * 0.01,
-              ),
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.9,
+              // height: 0.9.sh, // Bỏ giá trị cố định
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  MediaQuery.of(context).padding.bottom -
+                  70.h,
+
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(16.r),
                 color: Colors.black.withOpacity(0.8),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(16.r),
                 child: StoryView(
+                  indicatorOuterPadding:
+                      EdgeInsets.symmetric(vertical: 14.r, horizontal: 10.r),
                   storyItems: storyItems,
                   controller: controller,
                   onComplete: handleCompleted,
@@ -399,17 +370,34 @@ class _StoryWidgetState extends State<StoryWidget> {
                         date = widget.user.stories[index].timeEnd;
                         currentIndex = index;
                       });
-                      print('Current Index: $currentIndex');
-                      print(
-                          'Total Stories: ${widget.user.stories[currentIndex].reactions.length}');
+                      // print('Current Index: $currentIndex');
+                      // print(
+                      //     'Text Position: (${widget.user.stories[currentIndex].textPositionX}, ${widget.user.stories[currentIndex].textPositionY})');
                     }
                   },
                 ),
               ),
             ),
+            // if (widget.user.stories[currentIndex].content != null &&
+            //     widget.user.stories[currentIndex].content!.isNotEmpty)
+            Positioned(
+              //bỏ cái conteent phía trên và thay bằng cái này, các giá trị thêm data vào là được
+              //   left: (widget.user.stories[currentIndex].textPositionX ?? 0.0) * screenWidth,
+              // top: (widget.user.stories[currentIndex].textPositionY ?? 0.0) * screenHeight,
+              left: 0.7031789380450563 * screenWidth,
+              top: 0.8595436568538493 * screenHeight,
+              child: Text(
+                widget.user.stories[currentIndex].content ?? '',
+                style: AppTextStyles.s16w400.copyWith(
+                  fontSize: 16.sp, //data font size
+                  color: Colors.white, // data color
+                  shadows: const [Shadow(blurRadius: 4)],
+                ),
+              ),
+            ),
             Container(
-              margin: const EdgeInsets.only(top: 10),
               alignment: Alignment.centerLeft,
+              padding: EdgeInsets.only(top: 2.h, left: 10.w),
               child: ProfileWidget(
                 user: widget.user,
                 date: date,
@@ -454,27 +442,27 @@ class _StoryWidgetState extends State<StoryWidget> {
               child: Opacity(
                 opacity: isAnimating ? 1 : 0,
                 child: HeartAnimationWiget(
-                    isAnimating: isAnimating,
-                    onEnd: () {
-                      setState(() {
-                        isAnimating = false;
-                      });
-                    },
-                    child: Text(
-                      currentReaction,
-                      style: AppTextStyles.s24Base.copyWith(fontSize: 60),
-                    )),
+                  isAnimating: isAnimating,
+                  onEnd: () {
+                    setState(() {
+                      isAnimating = false;
+                    });
+                  },
+                  child: Text(
+                    currentReaction,
+                    style: AppTextStyles.s24Base.copyWith(fontSize: 60.sp),
+                  ),
+                ),
               ),
             ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.1,
+                    maxHeight: 0.1.sh, // 10% chiều cao màn hình
                   ),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -482,204 +470,207 @@ class _StoryWidgetState extends State<StoryWidget> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        widget.user.userId !=
-                                Get.find<AppController>().currentUser.id
-                            ? CommentWidget(
-                                onTap: () {
-                                  controller.pause();
-                                  setState(() {
-                                    isCommenting = true;
-                                  });
-                                },
-                                story: widget.user.stories[currentIndex],
-                                userStory: widget.user,
-                                onKeyboardHidden: () {
-                                  controller.play();
-                                  setState(() {
-                                    isCommenting = false;
-                                  });
-                                },
-                                isExpanded: isCommenting,
-                              )
-                            : const SizedBox(),
+                        if (widget.user.userId !=
+                            Get.find<AppController>().currentUser.id)
+                          CommentWidget(
+                            onTap: () {
+                              controller.pause();
+                              setState(() {
+                                isCommenting = true;
+                              });
+                            },
+                            story: widget.user.stories[currentIndex],
+                            userStory: widget.user,
+                            onKeyboardHidden: () {
+                              controller.play();
+                              setState(() {
+                                isCommenting = false;
+                              });
+                            },
+                            isExpanded: isCommenting,
+                          )
+                        else
+                          const SizedBox(),
                         AnimatedOpacity(
-                            opacity: isCommenting ? 0.3 : 1.0,
-                            duration: const Duration(milliseconds: 300),
-                            child: widget.user.userId !=
-                                    Get.find<AppController>().currentUser.id
-                                ? Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                        if (!isKeyBoardUp)
-                                          ...allRowEmoji.map((emoji) {
-                                            bool isReactionEmoji = false;
-                                            isReactionEmoji = isReaction
+                          opacity: isCommenting ? 0.3 : 1.0,
+                          duration: const Duration(milliseconds: 300),
+                          child: widget.user.userId !=
+                                  Get.find<AppController>().currentUser.id
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    if (!isKeyBoardUp)
+                                      ...allRowEmoji.map((emoji) {
+                                        final bool isReactionEmoji = isReaction
+                                            ? currentReaction == emoji
+                                            : checkReaction() != -1
+                                                ? allRowEmoji[
+                                                        checkReaction()] ==
+                                                    emoji
+                                                : false;
+                                        return Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            isReaction
                                                 ? currentReaction == emoji
+                                                    ? Container(
+                                                        height: 5.h,
+                                                        width: 5.w,
+                                                        decoration:
+                                                            const BoxDecoration(
+                                                          color: Colors
+                                                              .transparent,
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                      )
+                                                    : AppSpacing.emptyBox
                                                 : checkReaction() != -1
                                                     ? allRowEmoji[
-                                                            checkReaction()] ==
-                                                        emoji
-                                                    : false;
-
-                                            return Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                isReaction
-                                                    ? currentReaction == emoji
+                                                                checkReaction()] ==
+                                                            emoji
                                                         ? Container(
-                                                            height: 5,
-                                                            width: 5,
-                                                            decoration: const BoxDecoration(
-                                                                color: Colors
-                                                                    .transparent,
-                                                                shape: BoxShape
-                                                                    .circle),
+                                                            height: 5.h,
+                                                            width: 5.w,
+                                                            decoration:
+                                                                const BoxDecoration(
+                                                              color: Colors
+                                                                  .transparent,
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                            ),
                                                           )
                                                         : AppSpacing.emptyBox
-                                                    : checkReaction() != -1
-                                                        ? allRowEmoji[
-                                                                    checkReaction()] ==
-                                                                emoji
-                                                            ? Container(
-                                                                height: 5,
-                                                                width: 5,
-                                                                decoration: const BoxDecoration(
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                    shape: BoxShape
-                                                                        .circle),
-                                                              )
-                                                            : AppSpacing
-                                                                .emptyBox
-                                                        : AppSpacing.emptyBox,
-                                                EmojiAnimation(
-                                                  isReaction: isReactionEmoji,
-                                                  emoji: emoji,
-                                                  onTap: () {
-                                                    controller.pause();
-                                                    HapticFeedback
-                                                        .heavyImpact();
-                                                    if (currentReaction !=
-                                                        emoji) {
-                                                      setState(() {
-                                                        isAnimating = true;
-                                                        currentReaction = emoji;
-                                                        isReaction = true;
-                                                      });
-                                                      Get.find<
-                                                              NewsfeedRepository>()
-                                                          .reactionStory(
-                                                        type: reaction[
-                                                            allRowEmoji.indexOf(
-                                                                emoji)],
-                                                        id: widget
-                                                            .user
-                                                            .stories[
-                                                                currentIndex]
-                                                            .storyId,
-                                                      );
-                                                    }
-                                                  },
-                                                ),
-                                              ],
-                                            );
-                                          }).toList(),
-                                      ] // Chuyển kết quả của map thành danh sách
+                                                    : AppSpacing.emptyBox,
+                                            EmojiAnimation(
+                                              isReaction: isReactionEmoji,
+                                              emoji: emoji,
+                                              onTap: () {
+                                                controller.pause();
+                                                HapticFeedback.heavyImpact();
+                                                if (currentReaction != emoji) {
+                                                  setState(() {
+                                                    isAnimating = true;
+                                                    currentReaction = emoji;
+                                                    isReaction = true;
+                                                  });
+                                                  Get.find<NewsfeedRepository>()
+                                                      .reactionStory(
+                                                    type: reaction[allRowEmoji
+                                                        .indexOf(emoji)],
+                                                    id: widget
+                                                        .user
+                                                        .stories[currentIndex]
+                                                        .storyId,
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      }).toList(),
+                                  ],
+                                )
+                              : widget.user.stories[currentIndex].reactions
+                                      .isEmpty
+                                  ? SizedBox(
+                                      height: 70.h,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Align(
+                                            child: GestureDetector(
+                                              onTap: _showViewersBottomSheet,
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons
+                                                        .keyboard_arrow_up_outlined,
+                                                    size: 24.sp,
+                                                  ),
+                                                  Text(
+                                                    'Chưa có người xem',
+                                                    style: AppTextStyles.s20Base
+                                                        .copyWith(
+                                                      fontSize: 20.sp,
+                                                      color: AppColors.text1,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 64.w),
+                                          SizedBox(width: 64.w),
+                                          Align(
+                                            child: IconButton(
+                                              icon: Icon(
+                                                Icons.add_to_photos_rounded,
+                                                size: 24.sp,
+                                              ),
+                                              onPressed: () {
+                                                print('Thêm tin');
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     )
-                                : widget.user.stories[currentIndex].reactions
-                                        .isEmpty
-                                    ? SizedBox(
-                                        height: 70,
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              Align(
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    _showViewersBottomSheet();
-                                                  },
-                                                  child: Row(
-                                                    children: [
-                                                      const Icon(Icons
-                                                          .keyboard_arrow_up_outlined),
-                                                      Text(
-                                                        'Chưa có người xem', // Số người xem
-                                                        style: AppTextStyles
-                                                            .s20Base
-                                                            .copyWith(
-                                                          color:
-                                                              AppColors.text1,
-                                                        ),
-                                                      ),
-                                                    ],
+                                  : SizedBox(
+                                      height: 70.h,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Align(
+                                            child: GestureDetector(
+                                              onTap: _showViewersBottomSheet,
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons
+                                                        .keyboard_arrow_up_outlined,
+                                                    size: 24.sp,
                                                   ),
-                                                ),
-                                              ),
-                                              AppSpacing.gapW64,
-                                              AppSpacing.gapW64,
-                                              Align(
-                                                child: IconButton(
-                                                  icon: const Icon(Icons
-                                                      .add_to_photos_rounded),
-                                                  onPressed: () {
-                                                    // Thực hiện hành động thêm tin
-                                                    print('Thêm tin');
-                                                  },
-                                                ),
-                                              ),
-                                            ]),
-                                      )
-                                    : SizedBox(
-                                        height: 70,
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              Align(
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    _showViewersBottomSheet();
-                                                  },
-                                                  child: Row(
-                                                    children: [
-                                                      const Icon(Icons
-                                                          .keyboard_arrow_up_outlined),
-                                                      Text(
-                                                        '${widget.user.stories[currentIndex].reactions.length} người xem',
-                                                        style: AppTextStyles
-                                                            .s20Base
-                                                            .copyWith(
-                                                          color:
-                                                              AppColors.text1,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  Text(
+                                                    '${widget.user.stories[currentIndex].reactions.length} người xem',
+                                                    style: AppTextStyles.s20Base
+                                                        .copyWith(
+                                                      fontSize: 20.sp,
+                                                      color: AppColors.text1,
+                                                    ),
                                                   ),
-                                                ),
+                                                ],
                                               ),
-                                              AppSpacing.gapW64,
-                                              AppSpacing.gapW64,
-                                              AppSpacing.gapW64,
-                                              Align(
-                                                child: IconButton(
-                                                  icon: const Icon(Icons
-                                                      .add_to_photos_rounded),
-                                                  onPressed: () {
-                                                    print('Thêm tin');
-                                                  },
-                                                ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 64.w),
+                                          SizedBox(width: 64.w),
+                                          SizedBox(width: 64.w),
+                                          Align(
+                                            child: IconButton(
+                                              icon: Icon(
+                                                Icons.add_to_photos_rounded,
+                                                size: 24.sp,
                                               ),
-                                            ]),
-                                      )),
+                                              onPressed: () {
+                                                print('Thêm tin');
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                        ),
                       ],
                     ),
                   ),

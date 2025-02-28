@@ -18,12 +18,11 @@ class CreateStoryView extends BaseView<CreateStoryController> {
     return Obx(() {
       if (controller.imagePath.value == '') {
         return Container(
-          margin: EdgeInsets.fromLTRB(
-            0,
-            0,
-            0,
-            MediaQuery.of(context).size.height * 0.06,
-          ),
+          key: controller.backgroundKey.value,
+          height: MediaQuery.of(context).size.height -
+              MediaQuery.of(context).padding.top -
+              MediaQuery.of(context).padding.bottom -
+              60.h,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.r),
             color: Color(controller.background.value),
@@ -33,6 +32,7 @@ class CreateStoryView extends BaseView<CreateStoryController> {
           controller.videoController.value != null &&
           controller.videoController.value!.value.isInitialized) {
         return Container(
+          key: controller.backgroundKey.value,
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           height: MediaQuery.of(context).size.height * 0.9,
           width: double.infinity,
@@ -46,6 +46,7 @@ class CreateStoryView extends BaseView<CreateStoryController> {
         );
       } else {
         return Container(
+          key: controller.backgroundKey.value,
           margin: EdgeInsets.fromLTRB(
             0,
             0,
@@ -255,9 +256,7 @@ class CreateStoryView extends BaseView<CreateStoryController> {
                       left: controller.textPosition.value.dx,
                       top: controller.textPosition.value.dy,
                       child: GestureDetector(
-                        onPanUpdate: (details) {
-                          controller.textPosition.value += details.delta;
-                        },
+                        onPanUpdate: controller.onPanUpdate,
                         onTap: () {
                           controller.showTextInput.value = true;
                           controller.textController.value.text =
