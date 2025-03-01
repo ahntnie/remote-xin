@@ -15,6 +15,7 @@ import '../../short_video/modal/user_video/user_video.dart';
 import '../../short_video/view/hashtag/videos_by_hashtag.dart';
 import '../../short_video/view/profile/item_post.dart';
 import '../controllers/search_controller.dart';
+import 'demo.dart';
 import 'widgets/_user_item.dart';
 
 class SearchView extends BaseView<SearchController> {
@@ -125,9 +126,9 @@ class SearchView extends BaseView<SearchController> {
               indicatorSize: TabBarIndicatorSize.label,
               unselectedLabelColor: AppColors.grey5,
               tabs: [
-                Tab(text: 'Video'),
+                const Tab(text: 'Video'),
                 Tab(text: Get.context!.l10n.search__users_label),
-                Tab(text: 'Hashtag'),
+                const Tab(text: 'Hashtag'),
               ],
             ),
             Expanded(
@@ -163,20 +164,34 @@ class SearchView extends BaseView<SearchController> {
   }
 
   Widget _buildEmptyResult() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AppIcon(
-          icon: AppIcons.search,
-          size: Sizes.s48,
-          color: AppColors.grey8,
-        ),
-        AppSpacing.gapH20,
-        Text(
-          l10n.search__no_result,
-          style: AppTextStyles.s18w500.copyWith(color: AppColors.grey8),
-        ),
-      ],
+    const String videoUrls =
+        'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+    // return Column(
+    //   mainAxisAlignment: MainAxisAlignment.center,
+    //   children: [
+    //     AppIcon(
+    //       icon: AppIcons.search,
+    //       size: Sizes.s48,
+    //       color: AppColors.grey8,
+    //     ),
+    //     AppSpacing.gapH20,
+    //     Text(
+    //       l10n.search__no_result,
+    //       style: AppTextStyles.s18w500.copyWith(color: AppColors.grey8),
+    //     ),
+    //   ],
+    // );
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 3 / 6,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
+      ),
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return _buildDemo(videoUrls[index], index);
+      },
     );
   }
 
@@ -265,6 +280,15 @@ class SearchView extends BaseView<SearchController> {
         return _buildGridItem(index);
       },
     ).paddingSymmetric(horizontal: 12);
+  }
+
+  Widget _buildDemo(String videoURL, int index) {
+    return VideoGridItem(
+      index: index,
+      key: ValueKey(index),
+      videoUrl:
+          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+    );
   }
 
   Widget _buildGridItem(int index) {
