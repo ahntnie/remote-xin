@@ -2,6 +2,7 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:rubber/rubber.dart';
 
 import '../../../../../../core/all.dart';
 import '../../../../../common_widgets/all.dart';
@@ -11,7 +12,6 @@ import '../../../../short_video/utils/colors.dart';
 import '../../controllers/chat_input_controller.dart';
 import '../../controllers/record_controller.dart';
 import 'reply_message_preview_widget.dart';
-import 'slide_up_menu_commandbot.dart';
 
 class ChatInput extends GetView<ChatInputController> {
   const ChatInput({super.key});
@@ -130,7 +130,7 @@ class ChatInput extends GetView<ChatInputController> {
         },
       ),
     );
-
+    // return const SizedBox();
     return Container(
       color: AppColors.grey11,
       child: Stack(
@@ -139,7 +139,7 @@ class ChatInput extends GetView<ChatInputController> {
           _buildSearchMentionedUsers(),
           Obx(() {
             if (controller.isShowMenuCommandBot.value) {
-              return _buildMenuCommandBot(context);
+              return const Text('context');
             }
             return const SizedBox();
           }),
@@ -715,69 +715,300 @@ class ChatInput extends GetView<ChatInputController> {
     ).clickable(() {
       controller.isShowMenuCommandBot.value =
           !controller.isShowMenuCommandBot.value;
+      _showMenuCommandBot(context);
     });
   }
 
-  Widget _buildMenuCommandBot(BuildContext context) {
-    return Obx(() {
-      return false //controller.isFetchingCommand.value
-          ? SizedBox(
-              height: 300,
-              child: ListView.builder(
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return _buildItemMenuShimmer(context);
-                },
+  // Widget _buildMenuCommandBot(BuildContext context) {
+  //   return Obx(() {
+  //     return false //controller.isFetchingCommand.value
+  //         ? SizedBox(
+  //             height: 300,
+  //             child: ListView.builder(
+  //               itemCount: 5,
+  //               itemBuilder: (context, index) {
+  //                 return _buildItemMenuShimmer(context);
+  //               },
+  //             ),
+  //           )
+  //         : ConstrainedBox(
+  //           constraints: BoxConstraints(
+  //             maxHeight: MediaQuery.of(context).size.height / 2,
+  //             minHeight: 60,
+  //           ),
+  //           child: Container(
+  //             height:
+  //                 controller.filteredCommands.value.slashCommands!.length *
+  //                     60.0,
+  //             margin: EdgeInsets.only(bottom: 0.059.sh),
+  //             decoration: BoxDecoration(
+  //               color: AppColors.white,
+  //               borderRadius: BorderRadius.circular(16),
+  //               boxShadow: [
+  //                 BoxShadow(
+  //                   color: Colors.grey.withOpacity(0.4),
+  //                   spreadRadius: 2,
+  //                   blurRadius: 10,
+  //                   offset: const Offset(0, 3),
+  //                 ),
+  //               ],
+  //             ),
+  //             child: Obx(() {
+  //               final commands = controller.filteredCommands;
+  //               return ListView.builder(
+  //                 itemCount: commands.value.slashCommands!.length,
+  //                 itemBuilder: (context, index) {
+  //                   return _buildItemMenuCommandBot(
+  //                     context,
+  //                     commands.value.slashCommands![index].name!,
+  //                     commands.value.slashCommands![index].description!,
+  //                     () {
+  //                       controller.textEditingController.text =
+  //                           '/${commands.value.slashCommands![index].name!}';
+  //                       controller.sendMessage();
+  //                       controller.textEditingController.clear();
+  //                       controller.isShowMenuCommandBot.value = false;
+  //                     },
+  //                   );
+  //                 },
+  //               );
+  //             }),
+  //           ),
+  //         );
+  //   });
+  // }
+
+  // void _showMenuCommandBot(BuildContext context) {
+  //   Future.delayed(const Duration(milliseconds: 100), () {
+  //     Scaffold.of(context)
+  //         .showBottomSheet(
+  //           backgroundColor: Colors.transparent,
+  //           (BuildContext context) {
+  //             return Container(
+  //               // margin: EdgeInsets.only(
+  //               //     bottom: MediaQuery.of(context).size.height * 0.05),
+  //               decoration: const BoxDecoration(
+  //                 color: Colors.white,
+  //                 borderRadius: BorderRadius.vertical(top: Radius.circular(1)),
+  //               ),
+  //               child: DraggableScrollableSheet(
+  //                 minChildSize: 0.2,
+  //                 expand: false,
+  //                 builder: (context, scrollController) {
+  //                   return Obx(() {
+  //                     final commands = controller.filteredCommands;
+  //                     return controller.isFetchingCommand.value
+  //                         ? ListView.builder(
+  //                             controller: scrollController,
+  //                             itemCount: 5,
+  //                             itemBuilder: (context, index) {
+  //                               return _buildItemMenuShimmer(context);
+  //                             },
+  //                           )
+  //                         : ListView.builder(
+  //                             controller: scrollController,
+  //                             itemCount: commands.value.slashCommands!.length,
+  //                             itemBuilder: (context, index) {
+  //                               return _buildItemMenuCommandBot(
+  //                                 context,
+  //                                 commands.value.slashCommands![index].name!,
+  //                                 commands
+  //                                     .value.slashCommands![index].description!,
+  //                                 () {
+  //                                   controller.textEditingController.text =
+  //                                       '/${commands.value.slashCommands![index].name!}';
+  //                                   controller.sendMessage();
+  //                                   controller.textEditingController.clear();
+  //                                   controller.isShowMenuCommandBot.value =
+  //                                       false;
+  //                                   Navigator.pop(context);
+  //                                 },
+  //                               );
+  //                             },
+  //                           );
+  //                   });
+  //                 },
+  //               ),
+  //             );
+  //           },
+  //         )
+  //         .closed
+  //         .then((_) {
+  //           controller.isShowMenuCommandBot.value = false;
+  //           print('Bottom sheet đã đóng!');
+  //         });
+  //   });
+  // }
+
+  void _showMenuCommandBot(BuildContext context) {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      Navigator.of(context)
+          .push(PageRouteBuilder(
+        opaque: false, // Cho phép hiển thị nền mờ phía sau
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return _RubberBottomSheetContent(
+            controller: controller,
+          );
+        },
+      ))
+          .then((_) {
+        controller.isShowMenuCommandBot.value = false;
+        print('Bottom sheet đã đóng!');
+      });
+    });
+  }
+
+  Widget _buildItemMenuCommandBot(BuildContext context, String name,
+      String description, VoidCallback onTap) {
+    return Wrap(children: [
+      Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Container(
+              //   width: 32,
+              //   height: 32,
+              //   decoration: const BoxDecoration(
+              //     color: AppColors.primary,
+              //     shape: BoxShape.circle,
+              //   ),
+              //   child: Center(
+              //       child: Text('XIN', style: AppTextStyles.s14w700.text1Color)),
+              // ),
+
+              Text(
+                description,
+                style: const TextStyle(color: AppColors.text2),
               ),
-            )
-          : SlideUpMenuCommandBot(
-              isVisible: controller.isShowMenuCommandBot.value,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height / 2,
-                  minHeight: 60,
-                ),
-                child: Container(
-                  height:
-                      controller.filteredCommands.value.slashCommands!.length *
-                          60.0,
-                  margin: EdgeInsets.only(bottom: 0.059.sh),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.4),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Obx(() {
-                    final commands = controller.filteredCommands;
-                    return ListView.builder(
-                      itemCount: commands.value.slashCommands!.length,
-                      itemBuilder: (context, index) {
-                        return _buildItemMenuCommandBot(
-                          context,
-                          commands.value.slashCommands![index].name!,
-                          commands.value.slashCommands![index].description!,
-                          () {
-                            controller.textEditingController.text =
-                                '/${commands.value.slashCommands![index].name!}';
-                            controller.sendMessage();
-                            controller.textEditingController.clear();
-                            controller.isShowMenuCommandBot.value = false;
-                          },
-                        );
+              Text(
+                '/$name',
+                style: const TextStyle(color: AppColors.subText3),
+              ),
+            ],
+          ).paddingOnly(left: 8, right: 12, top: 10, bottom: 8),
+          const Divider(
+            thickness: 0.3,
+            color: Colors.grey,
+          ).paddingOnly(left: 20),
+        ],
+      ),
+    ]).clickable(onTap);
+  }
+
+  Widget _buildItemMenuShimmer(BuildContext context) {
+    return Row(
+      children: [
+        // Container(
+        //   width: 32,
+        //   height: 32,
+        //   decoration: const BoxDecoration(
+        //     color: AppColors.primary,
+        //     shape: BoxShape.circle,
+        //   ),
+        //   child: Center(
+        //       child: Text('XIN', style: AppTextStyles.s14w700.text1Color)),
+        // ),
+        AppSpacing.gapW8,
+        Shimmer.fromColors(
+          baseColor: Colors.grey.withOpacity(0.2),
+          highlightColor: ColorRes.colorLight.withOpacity(0.2),
+          child: Container(
+            width: 100,
+            height: 20,
+            color: Colors.grey,
+          ),
+        ),
+        AppSpacing.gapW8,
+        Shimmer.fromColors(
+          baseColor: Colors.grey.withOpacity(0.2),
+          highlightColor: ColorRes.colorLight.withOpacity(0.2),
+          child: Container(
+            width: 100,
+            height: 20,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    ).paddingOnly(left: 8, right: 12, top: 8, bottom: 8);
+  }
+}
+
+/// Widget này chứa toàn bộ logic hiển thị RubberBottomSheet
+class _RubberBottomSheetContent extends StatefulWidget {
+  const _RubberBottomSheetContent({required this.controller, Key? key})
+      : super(key: key);
+  final ChatInputController controller;
+  @override
+  _RubberBottomSheetContentState createState() =>
+      _RubberBottomSheetContentState();
+}
+
+class _RubberBottomSheetContentState extends State<_RubberBottomSheetContent>
+    with SingleTickerProviderStateMixin {
+  late RubberAnimationController _rubberController;
+
+  @override
+  void initState() {
+    super.initState();
+    _rubberController = RubberAnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      // Khi bottom sheet ở trạng thái đóng, chỉ hiện 10px từ cạnh dưới
+      // lowerBoundValue: AnimationControllerValue(pixel: 10),
+      // // Chiều cao tối đa của bottom sheet (ví dụ chiếm 70% chiều cao màn hình)
+      upperBoundValue: AnimationControllerValue(percentage: 0.5),
+      // // Giá trị khởi tạo ban đầu là 10px
+      initialValue: 10,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // Nền mờ phía sau khi hiển thị bottom sheet
+      backgroundColor: Colors.blue.withOpacity(0.1),
+      body: RubberBottomSheet(
+        animationController: _rubberController,
+        // lowerLayer dùng để hiển thị nền phía sau bottom sheet; chạm vào đây sẽ đóng sheet
+        lowerLayer: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Container(color: Colors.transparent),
+        ),
+        // upperLayer chứa nội dung của bottom sheet
+        upperLayer: Obx(() {
+          final commands = widget.controller.filteredCommands;
+          print(commands.value.slashCommands!.length);
+          return widget.controller.isFetchingCommand.value
+              ? ListView.builder(
+                  //  controller: scrollController,
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return _buildItemMenuShimmer(context);
+                  },
+                )
+              : ListView.builder(
+                  // controller: scrollController,
+                  itemCount: commands.value.slashCommands!.length,
+                  itemBuilder: (context, index) {
+                    return _buildItemMenuCommandBot(
+                      context,
+                      commands.value.slashCommands![index].name!,
+                      commands.value.slashCommands![index].description!,
+                      () {
+                        widget.controller.textEditingController.text =
+                            '/${commands.value.slashCommands![index].name!}';
+                        widget.controller.sendMessage();
+                        widget.controller.textEditingController.clear();
+                        widget.controller.isShowMenuCommandBot.value = false;
+                        Navigator.pop(context);
                       },
                     );
-                  }),
-                ),
-              ),
-            );
-    });
+                  },
+                );
+        }),
+      ),
+    );
   }
 
   Widget _buildItemMenuCommandBot(BuildContext context, String name,

@@ -270,7 +270,7 @@ class ChatInputController extends GetxController
     isFetchingCommand.value = true;
     listCommandBot.value = CommandModel(
         slashCommands: List.filled(
-      10,
+      50,
       SlashCommands(
           botId: 111,
           createdAt: '27/02/2024',

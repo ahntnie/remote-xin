@@ -168,6 +168,7 @@ class ChatHubView extends BaseView<ChatHubController> {
                 ),
               ),
               AppSpacing.gapH8,
+
               _buildChatInput(),
             ],
           ),
@@ -394,7 +395,7 @@ class ChatHubView extends BaseView<ChatHubController> {
               ? _buildBlockedConversationWidget()
               : controller.conversation.isLocked
                   ? AppSpacing.gapH32
-                  : ChatInput()
+                  : const ChatInput()
           : AppSpacing.gapH32,
     );
   }
