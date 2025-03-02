@@ -51,6 +51,10 @@ class ChatInputController extends GetxController
 
   Rx<CommandModel> filteredCommands = CommandModel().obs;
 
+  RxnDouble sizeHeightMenuCommandBot = RxnDouble();
+
+  double? previousMenuHeight = 0.0;
+
   String pathLocal = '';
 
   ChatInputController({

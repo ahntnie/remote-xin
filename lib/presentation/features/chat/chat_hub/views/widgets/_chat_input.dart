@@ -1,5 +1,6 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:rubber/rubber.dart';
@@ -137,12 +138,13 @@ class ChatInput extends GetView<ChatInputController> {
         alignment: Alignment.bottomCenter,
         children: [
           _buildSearchMentionedUsers(),
-          Obx(() {
-            if (controller.isShowMenuCommandBot.value) {
-              return const Text('context');
-            }
-            return const SizedBox();
-          }),
+          // Obx(() {
+          _buildMenuCommandBot(context),
+          // if (controller.isShowMenuCommandBot.value) {
+          //   return const Text('context');
+          // }
+          // return const SizedBox();
+          // }),
           child,
         ],
       ),
@@ -715,68 +717,100 @@ class ChatInput extends GetView<ChatInputController> {
     ).clickable(() {
       controller.isShowMenuCommandBot.value =
           !controller.isShowMenuCommandBot.value;
-      _showMenuCommandBot(context);
     });
   }
 
-  // Widget _buildMenuCommandBot(BuildContext context) {
-  //   return Obx(() {
-  //     return false //controller.isFetchingCommand.value
-  //         ? SizedBox(
-  //             height: 300,
-  //             child: ListView.builder(
-  //               itemCount: 5,
-  //               itemBuilder: (context, index) {
-  //                 return _buildItemMenuShimmer(context);
-  //               },
-  //             ),
-  //           )
-  //         : ConstrainedBox(
-  //           constraints: BoxConstraints(
-  //             maxHeight: MediaQuery.of(context).size.height / 2,
-  //             minHeight: 60,
-  //           ),
-  //           child: Container(
-  //             height:
-  //                 controller.filteredCommands.value.slashCommands!.length *
-  //                     60.0,
-  //             margin: EdgeInsets.only(bottom: 0.059.sh),
-  //             decoration: BoxDecoration(
-  //               color: AppColors.white,
-  //               borderRadius: BorderRadius.circular(16),
-  //               boxShadow: [
-  //                 BoxShadow(
-  //                   color: Colors.grey.withOpacity(0.4),
-  //                   spreadRadius: 2,
-  //                   blurRadius: 10,
-  //                   offset: const Offset(0, 3),
-  //                 ),
-  //               ],
-  //             ),
-  //             child: Obx(() {
-  //               final commands = controller.filteredCommands;
-  //               return ListView.builder(
-  //                 itemCount: commands.value.slashCommands!.length,
-  //                 itemBuilder: (context, index) {
-  //                   return _buildItemMenuCommandBot(
-  //                     context,
-  //                     commands.value.slashCommands![index].name!,
-  //                     commands.value.slashCommands![index].description!,
-  //                     () {
-  //                       controller.textEditingController.text =
-  //                           '/${commands.value.slashCommands![index].name!}';
-  //                       controller.sendMessage();
-  //                       controller.textEditingController.clear();
-  //                       controller.isShowMenuCommandBot.value = false;
-  //                     },
-  //                   );
-  //                 },
-  //               );
-  //             }),
-  //           ),
-  //         );
-  //   });
-  // }
+  Widget _buildMenuCommandBot(BuildContext context) {
+    return Obx(() {
+      if (controller.isShowMenuCommandBot.value) {
+        if (controller.sizeHeightMenuCommandBot.value == null) {
+        } else if (controller.sizeHeightMenuCommandBot.value == 0) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            controller.sizeHeightMenuCommandBot.value =
+                MediaQuery.of(context).size.height / 3;
+          });
+        } else {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            controller.sizeHeightMenuCommandBot.value = null;
+          });
+        }
+      } else {
+        controller.sizeHeightMenuCommandBot.value = 0;
+      }
+
+      if (controller.isFetchingCommand.value) {
+        return SizedBox(
+          height: 300,
+          child: ListView.builder(
+            itemCount: 5,
+            itemBuilder: (context, index) {
+              return _buildItemMenuShimmer(context);
+            },
+          ),
+        );
+      } else {
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height,
+          ),
+          child: AnimatedContainer(
+            margin: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom + 0.059.sh),
+            duration: const Duration(milliseconds: 300),
+            height: controller.sizeHeightMenuCommandBot.value,
+            curve: Curves.easeInOut,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+              ),
+              border: Border(
+                top: BorderSide(color: Color.fromRGBO(50, 50, 105, 0.15)),
+              ),
+            ),
+            child: DraggableScrollableSheet(
+              initialChildSize:
+                  controller.sizeHeightMenuCommandBot.value == null ? 0.3 : 1,
+              expand: false,
+              builder: (context, scrollController) {
+                scrollController.addListener(() {
+                  if (scrollController.position.userScrollDirection ==
+                      ScrollDirection.reverse) {
+                    if (controller.sizeHeightMenuCommandBot.value != null) {
+                      controller.sizeHeightMenuCommandBot.value = null;
+                    }
+                  }
+                });
+
+                return Obx(() {
+                  final commands = controller.filteredCommands;
+                  return ListView.builder(
+                    controller: scrollController,
+                    itemCount: commands.value.slashCommands!.length,
+                    itemBuilder: (context, index) {
+                      return _buildItemMenuCommandBot(
+                        context,
+                        commands.value.slashCommands![index].name!,
+                        commands.value.slashCommands![index].description!,
+                        () {
+                          controller.textEditingController.text =
+                              '/${commands.value.slashCommands![index].name!}';
+                          controller.sendMessage();
+                          controller.textEditingController.clear();
+                          controller.isShowMenuCommandBot.value = false;
+                        },
+                      );
+                    },
+                  );
+                });
+              },
+            ),
+          ),
+        );
+      }
+    });
+  }
 
   // void _showMenuCommandBot(BuildContext context) {
   //   Future.delayed(const Duration(milliseconds: 100), () {

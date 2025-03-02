@@ -131,7 +131,6 @@ class ChatHubView extends BaseView<ChatHubController> {
           backgroundGradientColor: AppColors.background6,
           body: Column(
             children: [
-              // _buildDivider(),
               Obx(
                 () => controller.isConversationInitiated
                     ? PinMessageWidget(
@@ -146,7 +145,22 @@ class ChatHubView extends BaseView<ChatHubController> {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    _buildMessagesList(),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 0.059.sh),
+                            child: _buildMessagesList(),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: _buildChatInput(),
+                          ),
+                        ],
+                      ),
+                    ),
                     Positioned(
                       right: 16,
                       bottom: 0,
@@ -168,8 +182,6 @@ class ChatHubView extends BaseView<ChatHubController> {
                 ),
               ),
               AppSpacing.gapH8,
-
-              _buildChatInput(),
             ],
           ),
         ),
